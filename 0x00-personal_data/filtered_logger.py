@@ -58,11 +58,28 @@ def get_logger() -> logging.Logger:
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """returns a connector to the database"""
     db_username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
-    db_pwd = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
+    db_pwd = os.getenv("PERSONAL_DATA_DB_PASSWORD", "root")
     db_host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
-    db_name = os.getenv("PERSONAL_DATA_DB_NAME")
+    db_name = os.getenv("PERSONAL_DATA_DB_NAME", "my_db")
     connect = mysql.connector.connection.MySQLConnection(user=db_username,
                                                          password=db_pwd,
                                                          host=db_host,
                                                          database=db_name)
     return connect
+
+
+def main():
+    """ main function """
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("select * from users;")
+    logger = get_logger()
+    for row in cursor:
+        line = ""
+        for key, val in row.items():
+            line += f"{key}={val}; "
+        logger.info(line)
+
+
+if __name__ == "__main__":
+    main()
