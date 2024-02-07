@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 """Provides functions for hashing and validating passwords using bcrypt."""
-from bcrypt import hashpw, gensalt, checkpw
+
+import bcrypt
 
 
-def hash_password(password) -> bytes:
+def hash_password(password: str) -> bytes:
     """Hashes the password using bcrypt."""
-    # generate salt using bcrypt
-    salt = gensalt()
-    # Hash the password using the generated salt
-    hashed_pwd = hashpw(password.encode('utf-8'), salt)
-    return hashed_pwd
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
 
 def is_valid(hashed_password: bytes, password: str) -> bool:
     """Checks if the provided password matches the hashed password."""
-    return checkpw(password.encode('utf-8'), hashed_password)
+    return bcrypt.checkpw(password.encode('utf-8'), hashed_password)
