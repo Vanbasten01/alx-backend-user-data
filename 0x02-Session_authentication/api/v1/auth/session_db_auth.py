@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """ module for SessionDBAuth's class """
-from models.user_session import UserSession
 from api.v1.auth.session_exp_auth import SessionExpAuth
+from models.user_session import UserSession
+from datetime import datetime, timedelta
 
 
 class SessionDBAuth(SessionExpAuth):
@@ -22,10 +23,18 @@ class SessionDBAuth(SessionExpAuth):
              session ID from the database."""
         if not session_id:
             return None
-        user_id = UserSession.search({"session_id": session_id})
-        if user_id:
-            return user_id[0]
-        return None
+        session_dict = self.user_id_by_session_id.get(session_id)
+        if not session_dict:
+            return None
+        if self.session_duration <= 0:
+            return session_dict.get('user_id', None)
+        if 'created_at' not in session_dict:
+            return None
+        created_at = session_dict['created_at']
+        expiration_time = created_at + timedelta(seconds=self.session_duration)
+        if expiration_time < datetime.now():
+            return None
+        return session_dict.get('user_id')
 
     def destroy_session(self, request=None):
         """Destroy the session associated with the request
