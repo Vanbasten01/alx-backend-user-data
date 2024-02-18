@@ -1,4 +1,4 @@
-#!/usr/vin/env python3
+#!/usr/bin/env python3
 """A simple Flask application for user registration."""
 from flask import Flask, jsonify, request, abort, make_response
 from auth import Auth
