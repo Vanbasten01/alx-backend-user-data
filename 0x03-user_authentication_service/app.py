@@ -29,15 +29,15 @@ def users():
 
 
 @app.route("/sessions", methods=['POST'], strict_slashes=False)
-def login():
+def login() -> str:
     """ handle sessions """
     email = request.form.get('email')
     password = request.form.get('password')
     if not auth.valid_login(email, password):
         abort(401)
-    session = auth.create_session(email)
-    response = make_response(jsonify({"email": email, "message": "logged in"}))
-    response.set_cookie("session_id", value=session)
+    session_id = auth.create_session(email)
+    response = jsonify({"email": email, "message": "logged in"})
+    response.set_cookie("session_id", session_id)
     return response
 
 
